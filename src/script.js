@@ -64,3 +64,15 @@ function translate(){
         
     });
 }
+
+// mobile
+var menuButton = document.getElementById('menu-button');
+var menu = document.getElementById('nav-links');
+menuButton.addEventListener('click',(e)=>{
+    if (menu.style.display == 'none'){
+        menu.style.display = 'flex';
+    }
+    else{
+        menu.style.display = 'none';
+    }
+})

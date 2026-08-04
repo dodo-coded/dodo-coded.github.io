@@ -49,6 +49,14 @@ nav{
 
     background-color: black;
 }
+#menu-button{
+    font-size: 1.2em;
+    display: none;
+    padding: .5em 1em;
+}
+#nav-links{
+    display: block;
+}
 nav a{
     position: relative;
     display: inline-block;
@@ -154,6 +162,15 @@ section a:hover{
 }
 
 @media screen and (max-width: 800px) {
+    #menu-button{
+        display: block;
+    }
+    #nav-links{
+        display: none;
+        flex-direction: column;
+        margin-top: .5em;
+    }
+    
     .sect-item{
         max-width: 100%;
     }
