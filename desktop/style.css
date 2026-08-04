@@ -1,0 +1,107 @@
+/* General */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Tahoma;
+    /* font-family: 'ＭＳ Ｐゴシック'; */
+}
+a{
+    text-decoration: none;
+}
+body{
+    background-color: #fd5fc8;
+}
+button{
+    border: outset 2px white;
+    outline: solid black 1px;
+    
+    padding: 5px;
+    font-size: 1em;
+}
+/* button::before{
+    content: ' ';
+    position: absolute;
+    z-index: -1;
+    border: solid black 5px;
+    top: 5px;
+} */
+button:active{
+    border-style: solid;
+}
+.tooltip{
+    background-color: gray;
+    padding: 3px;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    opacity: 70%;
+    visibility: hidden;
+}
+
+/* Main sections */
+main{
+    height: 100vh;
+}
+main > *{
+    background-color: #e7e7de;
+    /* margin: 0 20px 0 20px; */
+}
+.windowBox{
+    border: 1.9em solid transparent;
+    border-image: url('img/border_clean.png') 30;
+    border-radius: 10px;
+    
+    width: fit-content;
+    position: absolute;
+    top: 50px;
+    left: 20px;
+    padding-top: 1.9em;
+    /* margin-top: 20px; */
+}
+.windowTitle{
+    position: absolute;
+    top: -1.5em;
+    left: -1.3em;
+    width: 140%;
+    
+    color: white;
+    font-weight: bold;
+    
+    user-select: none;
+}
+.windowCloseButton{
+    position: absolute;
+    top: -1.5em;
+    right: -1.3em;
+
+    height: 1.3em;
+    width: 1.3em;
+    border-radius: 10%;
+    background: url('img/button_close.png') center;
+}
+.windowCloseButton:active{
+    background: url('img/button_close_pressed.png') center;
+}
+
+#resetView{
+    position: relative;
+    margin: 0;
+    z-index: 1;
+}
+#resetView:hover .tooltip{
+    visibility: visible;
+}
+#resetView:active{
+    background-image: url();
+}
+
+/* catbox */
+#catbox{
+    position: fixed;
+    bottom: 0;
+    right: 0;
+}
+#cat{
+    font-family: 'ＭＳ Ｐゴシック';
+}

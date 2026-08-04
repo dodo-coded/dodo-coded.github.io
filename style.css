@@ -1,0 +1,166 @@
+*{
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+body{
+    color: white;
+    margin: 0;
+    background: url("img/body_bg.png") no-repeat fixed center;
+    background-size: cover;
+}
+header{
+    padding: .25em 0;
+    background-color: black;
+}
+#translation-switch{
+    position: absolute;
+    top: .5em;
+    right: 2em;
+    padding: .25em;
+    border-radius: 1em;
+    user-select: none;
+    font-weight: bold;
+}
+#translation-switch-bg{
+    position: absolute;
+    inset: 0;
+    width: 50%;
+    left: 50%;
+    border-radius: 1em;
+    background-image: url("https://flagcdn.com/h40/gb.png");
+    background-position: center;
+    background-size: cover;
+}
+@keyframes switch-right {
+    from{left: 0;}
+    to{left: 50%;}
+}
+@keyframes switch-left {
+    from{left: 50%;}
+    to{left: 0;}
+}
+#translation-switch span{
+    width: 50%;
+    padding: 5px;
+}
+nav{
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    background-color: black;
+}
+nav a{
+    position: relative;
+    display: inline-block;
+    padding: .5em 1em;
+
+    font-size: 1.2em;
+    color: white;
+    text-decoration: none;
+
+    transition: color .2s ease;
+}
+nav a:hover{
+    color: black;
+}
+nav a:hover span{
+    position: relative;
+    z-index: 1;
+}
+nav a::before{
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-color: white;
+    transform: scaleX(0);
+    transform-origin: left;
+
+    transition: transform .2s ease;
+    
+}
+nav a:hover::before{
+    content: '';
+    position: absolute;
+    transform: scaleX(1);
+}
+
+
+section > h1{
+    padding: .25em;
+    margin-bottom: 0;
+    background-color: black;
+}
+section a{
+    color: wheat;
+}
+section a:hover{
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.sect-item{
+    max-width: 70%;
+    min-height: 230px;
+    padding: 1em;
+    margin-bottom: 1em;
+    font-size: 1.15rem;
+    background-color: rgb(0, 0, 0, 0.7);
+    backdrop-filter: blur(3px);
+}
+.sect-item:nth-child(2n){
+    margin-right: 0;
+    /* ??? */
+}
+
+.sect-item > img{
+    max-height: 200px;
+    margin: 10px;
+    float: right;
+}
+
+.img-board{
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.img-board > img{
+    max-width: 30%;
+}
+
+#img-viewer{
+    display: none;
+    justify-content: center;
+    align-items: center;
+
+    position: fixed;
+    top: 0;
+    z-index: 2;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.6);
+    animation: 'fade-in .2s ease';
+}
+
+@keyframes fade-in {
+    from{
+        opacity: 0;
+    }
+    to{
+        opacity: 1;
+    }
+}
+
+@media screen and (max-width: 800px) {
+    .sect-item{
+        max-width: 100%;
+    }
+
+    .sect-item > img{
+    max-height: 200px;
+    margin: 0;
+    float: none;
+}
+}

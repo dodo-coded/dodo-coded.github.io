@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Tab</title>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+    <main>
+        <button id="resetWindows" onclick="resetWindows()">
+            Reset
+            <span class="tooltip">Reset to the default layout</span>
+        </button>
+        <button id="addWindow" onclick="addWindow()">
+            Add Window
+            <span class="tooltip">WIP</span>
+        </button>
+        <div class="windowBox">
+            <p class="windowTitle">Title</p>
+            <button class="windowCloseButton" onclick="closeWindow(this)"></button>
+            content
+        </div>
+        <script src="src/movableWindows.js"></script>
+    </main>
+    <div id="catbox">
+        <pre id="cat">   
+        </pre>
+        <script>
+            const kitty = document.getElementById('cat');
+            let state = 0;
+            setInterval(()=>{
+                switch (state) {
+                    case 0:
+kitty.textContent = `
+    ♪
+　　∧＿∧　　
+　 （´・ω・｀ ∩
+　　o　　　 ,ﾉ  ♪
+　　Ｏ＿　.ﾉ
+♪　 　 (ノ
+`
+                        state = 1;
+                        break;
+                    case 1:
+kitty.textContent = `
+
+　　∧＿∧　♪
+　 ∩・ω・｀）
+♪ |　　 ⊂ﾉ
+ 　｜　　 _⊃　　♪
+ 　 し ⌒
+`
+                        state = 0;
+                        break;
+                }
+            }, 1000)
+        </script>
+    </div>
+</body>
+</html>
