@@ -42,6 +42,8 @@ header{
     width: 50%;
     padding: 5px;
 }
+
+/* navigation */
 nav{
     position: sticky;
     top: 0;
@@ -93,7 +95,7 @@ nav a:hover::before{
     transform: scaleX(1);
 }
 
-
+/* sections */
 section > h1{
     padding: .25em;
     margin-bottom: 0;
@@ -115,10 +117,6 @@ section a:hover{
     font-size: 1.15rem;
     background-color: rgb(0, 0, 0, 0.7);
     backdrop-filter: blur(3px);
-}
-.sect-item:nth-child(2n){
-    margin-right: 0;
-    /* ??? */
 }
 
 .sect-item > img{
@@ -149,6 +147,7 @@ section a:hover{
     max-width: 30%;
 }
 
+/* image focus */
 #img-viewer{
     display: none;
     justify-content: center;
