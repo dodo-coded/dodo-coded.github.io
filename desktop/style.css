@@ -3,26 +3,27 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: Tahoma;
-    /* font-family: 'ＭＳ Ｐゴシック'; */
+    font-family: 'ＭＳ Ｐゴシック', 'Tahoma';
 }
 a{
     text-decoration: none;
 }
 body{
-    background: url("img/desktop_bg.jpg") center no-repeat;
+    background: url("img/desktop_bg.jpg") top no-repeat;
     background-size: cover;
     image-rendering: pixelated;
 }
 button{
     border: outset 2px white;
     outline: solid black 1px;
+    background-color: rgb(219, 219, 219);
     
     padding: 5px;
     font-size: 1em;
 }
 button:active{
     border-style: solid;
+    background-color: white;
 }
 
 /* Main sections */
@@ -31,8 +32,9 @@ main{
 }
 main > *{
     background-color: #e7e7de;
-    /* margin: 0 20px 0 20px; */
 }
+
+/* window styling */
 .windowBox{
     border: 1.9em solid transparent;
     border-image: url('img/border_clean.png') 30;
@@ -67,18 +69,6 @@ main > *{
 }
 .windowCloseButton:active{
     background: url('img/button_close_pressed.png') center;
-}
-
-#resetView{
-    position: relative;
-    margin: 0;
-    z-index: 1;
-}
-#resetView:hover .tooltip{
-    visibility: visible;
-}
-#resetView:active{
-    background-image: url();
 }
 
 /* catbox */

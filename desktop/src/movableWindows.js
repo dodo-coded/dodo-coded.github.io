@@ -5,9 +5,7 @@ const minWindowWidth = windows[0].getBoundingClientRect().width;
 const minWindowHeight = windows[0].getBoundingClientRect().height;
 let leftDist, topDist, rightDist, bottomDist, resizeDirX, resizeDirY;
 let currentRect;
-const resizeThreshold = 8, moveThreshold = 30;
-
-console.log(minWindowWidth)
+const resizeThreshold = 10, moveThreshold = 30;
 
 for (let i = 0; i < windows.length; i++) {
     windows[i].addEventListener('mousedown',grabWindow);
@@ -15,16 +13,18 @@ for (let i = 0; i < windows.length; i++) {
 document.addEventListener('mouseup', relaseWindow);
 
 function grabWindow(e){
+    // check if mouse was clicked on title or window, and set target
     if (e.target.classList.contains('windowBox')){
         target = e.target;
     } else if (e.target.classList.contains('windowTitle')){
         target = e.target.parentElement;
     } else {
+        // if mouse was clicked on 'x', dont grab window
         return;
     }
-    let rect = target.getBoundingClientRect();
     
     // get mouse position inside the window
+    let rect = target.getBoundingClientRect();
     leftDist = event.x-rect.left;
     topDist = event.y-rect.top;
     rightDist = rect.width-leftDist;
@@ -43,7 +43,7 @@ function grabWindow(e){
         document.addEventListener('mousemove', moveWindow);
     }
 
-    // if the mouse is on the window border, enable appropriate resizing
+    // if the mouse is on the window border, check which border its on
     let cursorDir = ''
     if (topDist<resizeThreshold){ 
         resizeDirY = -1;
@@ -64,6 +64,7 @@ function grabWindow(e){
     }
     else { resizeDirX = 0 }
 
+    // if its on any border, enable resizing
     if (resizeDirX != 0 || resizeDirY != 0){
         currentRect = rect;
         main.style.cursor = cursorDir+'-resize';
@@ -81,6 +82,7 @@ function relaseWindow(){
 }
 
 function moveWindow(event){
+    // move window with offset (leftDist and topDist)
     target.style.left = (event.x-leftDist)+'px';
     target.style.top = (event.y-topDist)+'px';
 }
