@@ -10,37 +10,34 @@ const resizeThreshold = 10, moveThreshold = 30;
 for (let i = 0; i < windows.length; i++) {
     windows[i].addEventListener('mousedown',grabWindow);
 }
+document.removeEventListener('mousemove', moveWindow);
+document.removeEventListener('mousemove', resizeWindow);
+document.addEventListener('mousemove',hoverWindow);
 document.addEventListener('mouseup', relaseWindow);
 
-function grabWindow(e){
-    // check if mouse was clicked on title or window, and set target
+function hoverWindow(e){
+    // check if mouse was hovered on title or window, and set target
     if (e.target.classList.contains('windowBox')){
         target = e.target;
     } else if (e.target.classList.contains('windowTitle')){
         target = e.target.parentElement;
     } else {
-        // if mouse was clicked on 'x', dont grab window
+        // if mouse was not hovered on window, do nothing
         return;
     }
-    
+    target.addEventListener('mouseleave',exitWindow);
+
     // get mouse position inside the window
     let rect = target.getBoundingClientRect();
     leftDist = event.x-rect.left;
     topDist = event.y-rect.top;
     rightDist = rect.width-leftDist;
     bottomDist = rect.height-topDist;
+    currentRect = rect;
 
-    // if the mouse is in the blue area at the top, enable movement
     if (topDist<moveThreshold && topDist>resizeThreshold && leftDist>resizeThreshold && rightDist>resizeThreshold){
         main.style.cursor = 'move';
-        target.style.position = 'absolute';
-        target.style.left = rect.left+'px';
-        target.style.top = rect.top+'px';
-        if (oldTarget) {
-            oldTarget.style.zIndex = 0;
-        }
-        target.style.zIndex = 1;
-        document.addEventListener('mousemove', moveWindow);
+        return;
     }
 
     // if the mouse is on the window border, check which border its on
@@ -66,17 +63,70 @@ function grabWindow(e){
 
     // if its on any border, enable resizing
     if (resizeDirX != 0 || resizeDirY != 0){
-        currentRect = rect;
         main.style.cursor = cursorDir+'-resize';
+        return;
+    }
+    main.style.cursor = 'default';
+}
+
+function exitWindow(e){
+    // when exiting window, start scanning for windows to hover over again
+    document.addEventListener('mousemove',hoverWindow);
+    target.removeEventListener('mouseleave',exitWindow);
+    main.style.cursor = 'default';
+}
+
+function grabWindow(e){
+    // check if mouse was clicked on title or window, and set target
+    if (e.target.classList.contains('windowBox')){
+        target = e.target;
+    } else if (e.target.classList.contains('windowTitle')){
+        target = e.target.parentElement;
+    } else {
+        return;
+    }
+    // stop scanning for hovering over any window
+    document.removeEventListener('mousemove',hoverWindow);
+    // stop scanning for exiting the window (especially when resizing)
+    target.removeEventListener('mouseleave',exitWindow);
+
+    // get mouse position inside the window
+    let rect = target.getBoundingClientRect();
+    leftDist = event.x-rect.left;
+    topDist = event.y-rect.top;
+    rightDist = rect.width-leftDist;
+    bottomDist = rect.height-topDist;
+    currentRect = rect;
+    
+    if (oldTarget) {
+        oldTarget.style.zIndex = "";
+    }
+    target.style.zIndex = 1;
+
+    // if the mouse is in the blue area at the top, enable movement
+    if (topDist<moveThreshold && topDist>resizeThreshold && leftDist>resizeThreshold && rightDist>resizeThreshold){
+        target.style.position = 'absolute';
+        target.style.left = currentRect.left+'px';
+        target.style.top = currentRect.top+'px';
+        document.addEventListener('mousemove', moveWindow);
+        return
+    }
+
+    // if the mouse is on any border, enable resizing
+    if (resizeDirX != 0 || resizeDirY != 0){
         document.addEventListener('mousemove', resizeWindow);
+        return
     }
 }
 
 function relaseWindow(){
     if (target){
         main.style.cursor = 'default';
+        // remove listeners for moving and resizing current window
         document.removeEventListener('mousemove', moveWindow);
         document.removeEventListener('mousemove', resizeWindow);
+        // start scanning for hovering over windows again
+        document.addEventListener('mousemove', hoverWindow)
         oldTarget = target;
     }
 }
@@ -138,6 +188,7 @@ function addWindow(){
     const windowTitle = document.createElement('p');
     windowTitle.classList.add('windowTitle')
     windowTitle.innerText = 'Title';
+
     windowBox.addEventListener('mousedown',grabWindow);
 
     const windowCloseButton = document.createElement('button')
@@ -147,7 +198,7 @@ function addWindow(){
     })
 
     windowBox.append(windowTitle, windowCloseButton,'content');
-    document.getElementsByTagName('main')[0].prepend(windowBox);
+    main.prepend(windowBox);
 }
 
 function closeWindow(element){
