@@ -21,58 +21,117 @@
             position: relative;
             display: flex;
             justify-content: center;
-            width: 74vw;
+            width: 84vw;
             gap: 25vw;
         }
         #polesGhosts{
             position: absolute;
             display: flex;
-            gap: 7vw;
+            gap: 6vw;
         }
         #ghostA, #ghostB, #ghostC{
             background-color: lightgray;
             opacity: 0%;
-            width: 20vw;
+            width: 24vw;
             height: 40vh;
         }
         #A, #B, #C{
             background-color: burlywood;
             width: 2vw;
-            max-width: 20px;
             height: 40vh;
         }
+
         #base{
             width: 80vw;
             height: 5vh;
-            
             background-color: burlywood;
+
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+        .label{
+            opacity: 0%;
         }
 
         .ring{
             position: absolute;
-            height: 4vh;
             border-radius: 20px / 50px;
+        }
+
+        #toolbar{
+            position: absolute;
+            width: 100%;
+            top: 0;
+            height: 2em;
+            background-color: beige;
+
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+        }
+        button, select{
+            border: none;
+            background-color: burlywood;
+            padding: 4px 8px;
+            border-radius: 5px;
+        }
+        #moveCounter{
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+            height: 2em;
+            background-color: beige;
+
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
         }
     </style>
 </head>
-<body>
+<body onload="restart()">
+    <div id="toolbar">
+        <button onclick="restart()">Reset</button>
+        <span>
+            Ring count
+            <select name="ringCount" id="ringCount">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4" selected>4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+            </select>
+        </span>
+        <span>
+            Show labels
+            <input type="checkbox" name="" id="showLabels" onchange="toggleLabels()">
+        </span>
+    </div>
     <div id="center">
         <div id="rings">
         </div>
         <div id="poles">
             <!-- <div id="ring"></div> -->
-            <div id="C"></div>
-            <div id="B"></div>
             <div id="A"></div>
+            <div id="B"></div>
+            <div id="C"></div>
         </div>
         <div id="polesGhosts">
-            <div id="ghostC"></div>
-            <div id="ghostB"></div>
             <div id="ghostA"></div>
+            <div id="ghostB"></div>
+            <div id="ghostC"></div>
         </div>
         <div id="base">
-
+            <span class="label">A</span>
+            <span class="label">B</span>
+            <span class="label">C</span>
         </div>
+    </div>
+    <div id="moveCounter">
+        moves: 0
     </div>
     <script>
         let rings = []
@@ -81,37 +140,78 @@
             [],
             []
         ]
-        let polesContainer = document.getElementById("poles")
-        let polesGhosts = [
+        const polesContainer = document.getElementById("poles")
+        const baseContainer = document.getElementById("base")
+        const polesGhosts = [
             document.getElementById("ghostA"),
             document.getElementById("ghostB"),
             document.getElementById("ghostC")
         ]
+        const ringCountSelect = document.getElementById("ringCount")
+        const movesCounter = document.getElementById("moveCounter")
         let holdingRing = false
         let movingRing = false
         let selectedRing = null
         let selectedRingId = -1
         let ringAnim = null
+        let showLabels = false
+        let moves = 0
 
-        let colors = ["red", "blue", "green", "yellow"]
-        let widths = [20, 18, 16, 14]
+        // base, rings, poles calculations
+        const GhostPoleWidth = 24
+        const GhostPoleGap = 6
+        const RingHeight =  3
+        const poleWidth = 2
+        const poleHeight = 40
+        polesContainer.style.width = (3*GhostPoleWidth+2*GhostPoleGap)+"vw"
+        polesContainer.style.gap = (GhostPoleWidth-poleWidth+GhostPoleGap)+"vw"
+        baseContainer.style.width = (3*GhostPoleWidth+2*GhostPoleGap+4)+"vw"
+
+        let colors = ["crimson", "blue", "green", "goldenrod", "aquamarine", "brown", "cadetblue", "coral"]
+        let widths = [24, 22, 20, 18, 16, 14, 12, 10]
+        // min: 2, max: 8
         let ring_count = 4
-        for (let i = 0; i < ring_count; i++) {
-            let ring = document.createElement("div")
-            // styling the rings
-            // ring.style.position = "absolute"
-            ring.style.bottom = (0+i*4)+"vh"
-            ring.style.right = ((20-widths[i])/2)+"vw"
-            
-            // ring.style.height = "4vh"
-            ring.style.width = widths[i]+"vw"
-            ring.style.backgroundColor = colors[i]
-            // ring.style.borderRadius = "5% / 50%"
-            
-            ring.classList.add("ring")
-            polesContainer.appendChild(ring)
-            rings.push(ring)
-            poles[0].push(ring)
+
+        function restart(){
+            // reset all prev values
+            rings = []
+            poles = [
+                [],[],[]
+            ]
+            holdingRing = false
+            movingRing = false
+            selectedRing = null
+            selectedRingId = -1
+            ringAnim = null
+            ring_count = ringCountSelect.value
+            showLabels = false
+            moves = 0
+
+            // delete previous rings
+            let deleteMes = document.getElementsByClassName("ring")
+            for (let i = deleteMes.length-1; i >= 0;  i--) {
+                deleteMes[i].remove()
+                
+            }
+
+            // create new rings
+            for (let i = 0; i < ring_count; i++) {
+                let ring = document.createElement("div")
+                // styling the rings
+                // ring.style.position = "absolute"
+                ring.style.bottom = (0+i*RingHeight)+"vh"
+                ring.style.left = ((GhostPoleWidth-widths[i])/2)+"vw"
+                
+                ring.style.height = RingHeight+"vh"
+                ring.style.width = widths[i]+"vw"
+                ring.style.backgroundColor = colors[i]
+                // ring.style.borderRadius = "5% / 50%"
+                
+                ring.classList.add("ring")
+                polesContainer.appendChild(ring)
+                rings.push(ring)
+                poles[0].push(ring)
+            }
         }
         for (let i = 0; i < polesGhosts.length; i++){
             polesGhosts[i].addEventListener("click", (e)=>{
@@ -124,12 +224,12 @@
                             holdingRing = true
                             movingRing = true
                             ringAnim = selectedRing.animate(
-                                [{bottom: selectedRing.style.bottom}, {bottom: "50vh"}], 
+                                [{bottom: selectedRing.style.bottom}, {bottom: (poleHeight+10)+"vh"}], 
                                 {
-                                    duration: 500,
+                                    duration: 400,
                                     iterations: 1,
                                     fill: "forwards",
-                                    easing: "ease"
+                                    easing: "ease-out"
                                 }
                             )
                             ringAnim.finished.then(()=>{
@@ -138,16 +238,16 @@
                         }
                     }
                     else{
-                        // move the ring to selected pole
-                        let rightDist = (27* i)
-                        // TODO right dist to fix
-                        console.log(rightDist)
-                        rightDist += ((20-widths[selectedRingId])/2)
-                        console.log(rightDist)
+                        // calculate distance to selected pole
+                        let leftDist = ((GhostPoleWidth+GhostPoleGap)* i)
+                        // console.log(leftDist)
+                        leftDist += ((GhostPoleWidth-widths[selectedRingId])/2)
+                        // console.log(leftDist)
                         movingRing = true
-    
+                        
+                        // move the ring to selected pole
                         ringAnim = selectedRing.animate(
-                            [{right: selectedRing.style.right}, {right: rightDist+"vw"}], 
+                            [{left: selectedRing.style.left}, {left: leftDist+"vw"}], 
                             {
                                 duration: 500,
                                 iterations: 1,
@@ -156,19 +256,19 @@
                             }
                         )
                         ringAnim.finished.then(()=>{
-                            selectedRing.style.right = rightDist+"vw"
+                            selectedRing.style.left = leftDist+"vw"
                             // check if can place on pole
                             let underRingId = rings.indexOf(poles[i][poles[i].length - 1])
                             if (widths[selectedRingId] < widths[underRingId] || underRingId == -1){
                                 // calculate bottom distance
-                                let bottomDist = poles[i].length * 4
+                                let bottomDist = poles[i].length * RingHeight
                                 ringAnim = selectedRing.animate(
-                                    [{bottom: "50vh"}, {bottom: bottomDist+"vh"}], 
+                                    [{bottom: (poleHeight+10)+"vh"}, {bottom: bottomDist+"vh"}], 
                                     {
-                                        duration: 500,
+                                        duration: 400,
                                         iterations: 1,
                                         fill: "forwards",
-                                        easing: "ease"
+                                        easing: "ease-in"
                                     }
                                 )
                                 ringAnim.finished.then(()=>{
@@ -181,6 +281,9 @@
 
                                     //todo check win condition
                                 })
+                                moves ++
+                                movesCounter.innerText  = "moves: "+moves
+
                             }
                             else{
                                 movingRing = false
@@ -189,6 +292,16 @@
                     }
                 }
             })
+        }
+
+        function toggleLabels(){
+            showLabels = !showLabels
+            let labels = document.getElementsByClassName("label")
+            for (let i = 0; i < labels.length; i++) {
+                if (showLabels) labels[i].style.opacity = "100%"
+                else labels[i].style.opacity = "0%"
+                
+            }
         }
     </script>
 </body>
