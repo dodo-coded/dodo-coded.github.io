@@ -47,11 +47,14 @@
             background-color: burlywood;
 
             display: flex;
-            justify-content: space-around;
+            justify-content: center;
+            gap: 28vw;
             align-items: center;
         }
         .label{
+            width: 2vw;
             opacity: 0%;
+            text-align: center;
         }
 
         .ring{
@@ -150,6 +153,7 @@
         const ringCountSelect = document.getElementById("ringCount")
         const movesCounter = document.getElementById("moveCounter")
         let holdingRing = false
+        let risingRing = false
         let movingRing = false
         let selectedRing = null
         let selectedRingId = -1
@@ -170,7 +174,7 @@
         let colors = ["crimson", "blue", "green", "goldenrod", "aquamarine", "brown", "cadetblue", "coral"]
         let widths = [24, 22, 20, 18, 16, 14, 12, 10]
         // min: 2, max: 8
-        let ring_count = 4
+        let ringCount = 4
 
         function restart(){
             // reset all prev values
@@ -183,7 +187,7 @@
             selectedRing = null
             selectedRingId = -1
             ringAnim = null
-            ring_count = ringCountSelect.value
+            ringCount = ringCountSelect.value
             showLabels = false
             moves = 0
 
@@ -195,7 +199,7 @@
             }
 
             // create new rings
-            for (let i = 0; i < ring_count; i++) {
+            for (let i = 0; i < ringCount; i++) {
                 let ring = document.createElement("div")
                 // styling the rings
                 // ring.style.position = "absolute"
@@ -215,83 +219,105 @@
         }
         for (let i = 0; i < polesGhosts.length; i++){
             polesGhosts[i].addEventListener("click", (e)=>{
-                if (!movingRing){
-                    if (!holdingRing){
-                        // raise the ring from its pole
-                        if (poles[i].length > 0) {
-                            selectedRing = poles[i].pop()
-                            selectedRingId = rings.indexOf(selectedRing)
-                            holdingRing = true
-                            movingRing = true
-                            ringAnim = selectedRing.animate(
-                                [{bottom: selectedRing.style.bottom}, {bottom: (poleHeight+10)+"vh"}], 
-                                {
-                                    duration: 400,
-                                    iterations: 1,
-                                    fill: "forwards",
-                                    easing: "ease-out"
-                                }
-                            )
-                            ringAnim.finished.then(()=>{
-                                movingRing = false
-                            })
-                        }
+                if(!holdingRing){
+                    if (!risingRing && poles[i].length > 0) {
+                        selectedRing = poles[i].pop()
+                        selectedRingId = rings.indexOf(selectedRing)
+                        holdingRing = true
+                        raiseRing(i)
                     }
-                    else{
-                        // calculate distance to selected pole
-                        let leftDist = ((GhostPoleWidth+GhostPoleGap)* i)
-                        // console.log(leftDist)
-                        leftDist += ((GhostPoleWidth-widths[selectedRingId])/2)
-                        // console.log(leftDist)
-                        movingRing = true
-                        
-                        // move the ring to selected pole
-                        ringAnim = selectedRing.animate(
-                            [{left: selectedRing.style.left}, {left: leftDist+"vw"}], 
-                            {
-                                duration: 500,
-                                iterations: 1,
-                                fill: "forwards",
-                                easing: "ease"
-                            }
-                        )
-                        ringAnim.finished.then(()=>{
-                            selectedRing.style.left = leftDist+"vw"
-                            // check if can place on pole
-                            let underRingId = rings.indexOf(poles[i][poles[i].length - 1])
-                            if (widths[selectedRingId] < widths[underRingId] || underRingId == -1){
-                                // calculate bottom distance
-                                let bottomDist = poles[i].length * RingHeight
-                                ringAnim = selectedRing.animate(
-                                    [{bottom: (poleHeight+10)+"vh"}, {bottom: bottomDist+"vh"}], 
-                                    {
-                                        duration: 400,
-                                        iterations: 1,
-                                        fill: "forwards",
-                                        easing: "ease-in"
-                                    }
-                                )
-                                ringAnim.finished.then(()=>{
-                                    movingRing = false
-                                    poles[i].push(selectedRing)
-                                    selectedRing.style.bottom = bottomDist+"vh"
-                                    holdingRing = false
-                                    selectedRing = null
-                                    selectedRingId = -1
-
-                                    //todo check win condition
-                                })
-                                moves ++
-                                movesCounter.innerText  = "moves: "+moves
-
-                            }
-                            else{
-                                movingRing = false
-                            }
-                        })
+                }
+                else{
+                    if(!movingRing){
+                        moveRing(i)
                     }
                 }
             })
+        }
+        function raiseRing(i){
+            risingRing = true
+            ringAnim = selectedRing.animate(
+                [{bottom: selectedRing.style.bottom}, {bottom: (poleHeight+10)+"vh"}], 
+                {
+                    duration: 400,
+                    iterations: 1,
+                    fill: "forwards",
+                    easing: "ease-out"
+                }
+            )
+            ringAnim.finished.then(()=>{
+                risingRing = false
+            })
+        }
+        function moveRing(i){
+            // calculate distance to selected pole
+            let leftDist = ((GhostPoleWidth+GhostPoleGap)* i)
+            // console.log(leftDist)
+            leftDist += ((GhostPoleWidth-widths[selectedRingId])/2)
+            // console.log(leftDist)
+            movingRing = true
+            
+            // move the ring to selected pole
+            ringAnim = selectedRing.animate(
+                [{left: selectedRing.style.left}, {left: leftDist+"vw"}], 
+                {
+                    duration: 500,
+                    iterations: 1,
+                    fill: "forwards",
+                    easing: "ease"
+                }
+            )
+            ringAnim.finished.then(()=>{
+                selectedRing.style.left = leftDist+"vw"
+
+                // check if can place on pole
+                let underRingId = rings.indexOf(poles[i][poles[i].length - 1])
+                if (widths[selectedRingId] < widths[underRingId] || underRingId == -1){
+                    dropRing(i)
+                }
+                else{
+                    movingRing = false
+                }
+            })
+        }
+        function dropRing(i){
+            // calculate bottom distance
+            let bottomDist = poles[i].length * RingHeight
+            ringAnim = selectedRing.animate(
+                [{bottom: (poleHeight+10)+"vh"}, {bottom: bottomDist+"vh"}], 
+                {
+                    duration: 400,
+                    iterations: 1,
+                    fill: "forwards",
+                    easing: "ease-in"
+                }
+            )
+            moves ++
+            movesCounter.innerText  = "moves: "+moves
+            ringAnim.finished.then(()=>{
+                movingRing = false
+                poles[i].push(selectedRing)
+                selectedRing.style.bottom = bottomDist+"vh"
+                holdingRing = false
+                selectedRing = null
+                selectedRingId = -1
+
+                //todo check win condition
+                checkWinCondition()
+            })
+        }
+
+        function checkWinCondition() {
+            let winning = true
+            for (let i = 0; i < poles[2].length; i++) {
+                if (poles[2][i] != rings[i]){
+                    winning = false
+                    break
+                }
+            }
+            if (winning && poles[2].length == rings.length){
+                alert("Good job! \nYou made "+moves+" moves. \nThe minimum were "+(Math.pow(2, ringCount)-1)+".")
+            }
         }
 
         function toggleLabels(){
