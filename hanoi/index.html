@@ -8,6 +8,7 @@
         body{
             margin: 0;
             padding: 0;
+            font-family: 'Courier New', Courier, monospace;
         }
         #center{
             width: 100vw;
@@ -50,6 +51,7 @@
             justify-content: center;
             gap: 28vw;
             align-items: center;
+
         }
         .label{
             width: 2vw;
@@ -60,6 +62,21 @@
         .ring{
             position: absolute;
             border-radius: 20px / 50px;
+            
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-shadow: white 0 0 3px;
+            font-weight: bold;
+
+            /* background: radial-gradient(at 30% 10%, crimson 60%, rgb(173, 14, 46));
+            background: radial-gradient(at 30% 10%, limegreen 60%, rgb(35, 158, 35));
+            background: radial-gradient(at 30% 10%, gold 60%, rgb(175, 149, 0));
+            background: radial-gradient(at 30% 10%, cornflowerblue 60%, rgb(78, 117, 189));
+            background: radial-gradient(at 30% 10%, rgb(196, 60, 60) 60%, rgb(129, 32, 32));
+            background: radial-gradient(at 30% 10%, olivedrab 60%, rgb(76, 102, 25));
+            background: radial-gradient(at 30% 10%, coral 60%, rgb(189, 94, 60));
+            background: radial-gradient(at 30% 10%, mediumpurple 60%, rgb(103, 81, 146)); */
         }
 
         #toolbar{
@@ -97,7 +114,7 @@
         <button onclick="restart()">Reset</button>
         <span>
             Ring count
-            <select name="ringCount" id="ringCount">
+            <select name="ringCount" id="ringCount" onchange="restart()">
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -171,7 +188,17 @@
         polesContainer.style.gap = (GhostPoleWidth-poleWidth+GhostPoleGap)+"vw"
         baseContainer.style.width = (3*GhostPoleWidth+2*GhostPoleGap+4)+"vw"
 
-        let colors = ["crimson", "blue", "green", "goldenrod", "aquamarine", "brown", "cadetblue", "coral"]
+        // let colors = ["crimson", "limegreen", "gold", "cornflowerblue", "brown", "olivedrab", "coral", "mediumpurple"]
+        let colors = [
+            "radial-gradient(at 30% 10%, crimson 60%, rgb(173, 14, 46))",
+            "radial-gradient(at 30% 10%, limegreen 60%, rgb(35, 158, 35))",
+            "radial-gradient(at 30% 10%, gold 60%, rgb(175, 149, 0))",
+            "radial-gradient(at 30% 10%, cornflowerblue 60%, rgb(78, 117, 189))",
+            "radial-gradient(at 30% 10%, rgb(196, 60, 60) 60%, rgb(129, 32, 32))",
+            "radial-gradient(at 30% 10%, olivedrab 60%, rgb(76, 102, 25))",
+            "radial-gradient(at 30% 10%, coral 60%, rgb(189, 94, 60))",
+            "radial-gradient(at 30% 10%, mediumpurple 60%, rgb(103, 81, 146))"
+        ]
         let widths = [24, 22, 20, 18, 16, 14, 12, 10]
         // min: 2, max: 8
         let ringCount = 4
@@ -188,7 +215,6 @@
             selectedRingId = -1
             ringAnim = null
             ringCount = ringCountSelect.value
-            showLabels = false
             moves = 0
 
             // delete previous rings
@@ -208,9 +234,15 @@
                 
                 ring.style.height = RingHeight+"vh"
                 ring.style.width = widths[i]+"vw"
-                ring.style.backgroundColor = colors[i]
+                ring.style.background = colors[i]
                 // ring.style.borderRadius = "5% / 50%"
                 
+                ring.textContent = ringCount-i
+                if (!showLabels){
+                    ring.style.textShadow = "none"
+                    ring.style.color = "transparent"
+                }
+
                 ring.classList.add("ring")
                 polesContainer.appendChild(ring)
                 rings.push(ring)
@@ -326,8 +358,17 @@
             for (let i = 0; i < labels.length; i++) {
                 if (showLabels) labels[i].style.opacity = "100%"
                 else labels[i].style.opacity = "0%"
-                
             }
+            rings.forEach((el, i) => {
+                if (showLabels){
+                    el.style.textShadow = "white 0 0 3px"
+                    el.style.color = "black"
+                }
+                else {
+                    el.style.textShadow = "none"
+                    el.style.color = "transparent"
+                }
+            });
         }
     </script>
 </body>
